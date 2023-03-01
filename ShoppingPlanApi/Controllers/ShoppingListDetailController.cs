@@ -35,9 +35,15 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByListName")]
-        public List<ShoppingListDetail> GetSearch([FromQuery] string Name)
+        public List<ShoppingListDetail> GetSearchByListName([FromQuery] string Name)
         {
             Expression<Func<ShoppingListDetail, bool>> expression = (c => c.ShoppingList.ShoppingListName.Contains(Name));
+            return _shoppingPlan.GetSpecial(expression).ToList();
+        }
+        [HttpGet("GetSearchByCategory")]
+        public List<ShoppingListDetail> GetSearchByCategory([FromQuery] string categoryName)
+        {
+            Expression<Func<ShoppingListDetail, bool>> expression = (c => c.ShoppingList.Category.CategoryName.Contains(categoryName));
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
 
