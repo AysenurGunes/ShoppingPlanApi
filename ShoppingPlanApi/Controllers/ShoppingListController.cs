@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
+using ShoppingPlanApi.Validations;
 using System.Linq.Expressions;
 
 namespace ShoppingPlanApi.Controllers
@@ -50,13 +52,14 @@ namespace ShoppingPlanApi.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] ShoppingListAddDto shoppingListAddDto)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(ShoppingList);
             var shoppingList = _mapper.Map<ShoppingList>(shoppingListAddDto);
             shoppingList.Done = false;
             shoppingList.CreatedDate = DateTime.UtcNow;
             //take from token
             shoppingList.CreatedUserID = 1;
+
+            ShoppingListValidation validations = new ShoppingListValidation();
+            validations.ValidateAndThrow(shoppingList);
 
             return StatusCode(_shoppingPlan.Add(shoppingList));
         }
@@ -69,15 +72,17 @@ namespace ShoppingPlanApi.Controllers
             {
                 return BadRequest();
             }
+          
 
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
             var shoppingList = _mapper.Map<ShoppingList>(shoppingListPutDto);
 
             if (shoppingList.Done)
             {
                 shoppingList.DoneDate = DateTime.UtcNow;
             }
+
+            ShoppingListValidation validations = new ShoppingListValidation();
+            validations.ValidateAndThrow(shoppingList);
 
             int result = _shoppingPlan.Edit(shoppingList);
             return StatusCode(result);

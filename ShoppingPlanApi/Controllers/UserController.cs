@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
+using ShoppingPlanApi.Validations;
 using System.Linq.Expressions;
 
 namespace ShoppingPlanApi.Controllers
@@ -49,8 +51,9 @@ namespace ShoppingPlanApi.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] UserAddDto userAddDto)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(User);
+            UserAddValidation validations = new UserAddValidation();
+            validations.ValidateAndThrow(userAddDto);
+
             var user = _mapper.Map<User>(userAddDto);
             return StatusCode(_shoppingPlan.Add(user));
         }
@@ -63,9 +66,9 @@ namespace ShoppingPlanApi.Controllers
             {
                 return BadRequest();
             }
+            UserPutValidation validations = new UserPutValidation();
+            validations.ValidateAndThrow(userPutDto);
 
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
             var user=_mapper.Map<User>(userPutDto);
             int result = _shoppingPlan.Edit(user);
             return StatusCode(result);
