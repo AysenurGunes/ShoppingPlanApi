@@ -11,7 +11,9 @@ namespace ShoppingPlanApi.AutoMapper
             CreateMap<ShoppingListAddDto, ShoppingList>();
             CreateMap<ShoppingListPutDto, ShoppingList>();
             CreateMap<ShoppingListAddDto, ShoppingListDetail>();
-           CreateMap<ShoppingListPutDto, ShoppingListDetail>();
+           CreateMap<ShoppingListPutDto, ShoppingListDetail>();    
+            CreateMap<UserAddDto, User>();
+           CreateMap<UserPutDto, User>();
            
         }
     }

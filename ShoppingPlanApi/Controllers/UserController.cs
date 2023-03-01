@@ -32,7 +32,8 @@ namespace ShoppingPlanApi.Controllers
         {
             Expression<Func<User, bool>> expression = (c => c.UserID == id);
             return _shoppingPlan.GetByID(expression);
-        }
+        } 
+      
 
         [HttpGet("GetSearchByName")]
         public List<User> GetSearch([FromQuery] string Name)

@@ -50,9 +50,9 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] ShoppingListAddDto shoppingListAddDto)
+        public ActionResult Post([FromBody] ShoppingListWithDetailAddDto shoppingListWithDetailAddDto)
         {
-            var shoppingList = _mapper.Map<ShoppingList>(shoppingListAddDto);
+            var shoppingList = _mapper.Map<ShoppingList>(shoppingListWithDetailAddDto.ShoppingListAddDto);
             shoppingList.Done = false;
             shoppingList.CreatedDate = DateTime.UtcNow;
             //take from token
@@ -61,7 +61,10 @@ namespace ShoppingPlanApi.Controllers
             ShoppingListValidation validations = new ShoppingListValidation();
             validations.ValidateAndThrow(shoppingList);
 
-            return StatusCode(_shoppingPlan.Add(shoppingList));
+            int statusCode = _shoppingPlan.Add(shoppingList);
+
+           // ShoppingListDetailController shoppingListDetailController=new ShoppingListDetailController(_shoppingPlan,mapper)
+            return StatusCode(statusCode);
         }
 
 
