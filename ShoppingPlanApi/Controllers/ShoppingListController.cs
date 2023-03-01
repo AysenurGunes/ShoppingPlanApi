@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
+using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
 using System.Linq.Expressions;
 
@@ -11,11 +13,12 @@ namespace ShoppingPlanApi.Controllers
     public class ShoppingListController : ControllerBase
     {
         private readonly IShoppingPlan<ShoppingList> _shoppingPlan;
-        // private readonly IMapper _mapper;
-        public ShoppingListController(IShoppingPlan<ShoppingList> shoppingPlan)
+        private readonly IMapper _mapper;
+        public ShoppingListController(IShoppingPlan<ShoppingList> shoppingPlan, IMapper mapper)
         {
             _shoppingPlan = shoppingPlan;
-            //_mapper = mapper;
+            _mapper = mapper;
+            
         }
         [HttpGet("GetAll")]
         public List<ShoppingList> Get()
@@ -45,11 +48,16 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] ShoppingList shoppingList)
+        public ActionResult Post([FromBody] ShoppingListAddDto shoppingListAddDto)
         {
             //PostBookValidation validations = new PostBookValidation();
             //validations.ValidateAndThrow(ShoppingList);
-
+            var shoppingList = _mapper.Map<ShoppingList>(shoppingListAddDto);
+            shoppingList.Done = false;
+            shoppingList.CreatedDate = DateTime.UtcNow;
+            //take from token
+            shoppingList.CreatedUserID = 1;
+            
             return StatusCode(_shoppingPlan.Add(shoppingList));
         }
 
