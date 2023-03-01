@@ -12,9 +12,9 @@ namespace ShoppingPlanApi.Controllers
     {
         private readonly IShoppingPlan<Measurement> _shoppingPlan;
         // private readonly IMapper _mapper;
-        public MeasurementController(IShoppingPlan<Measurement> Measurement)
+        public MeasurementController(IShoppingPlan<Measurement> shoppingPlan)
         {
-            _shoppingPlan = Measurement;
+            _shoppingPlan = shoppingPlan;
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]

@@ -8,56 +8,56 @@ namespace ShoppingPlanApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class ShoppingListController : ControllerBase
     {
-        private readonly IShoppingPlan<Category> _shoppingPlan;
+        private readonly IShoppingPlan<ShoppingList> _shoppingPlan;
         // private readonly IMapper _mapper;
-        public CategoryController(IShoppingPlan<Category> shoppingPlan)
+        public ShoppingListController(IShoppingPlan<ShoppingList> shoppingPlan)
         {
             _shoppingPlan = shoppingPlan;
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
-        public List<Category> Get()
+        public List<ShoppingList> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
-        public Category Get([FromQuery] int id)
+        public ShoppingList Get([FromQuery] int id)
         {
-            Expression<Func<Category, bool>> expression = (c => c.CategoryID == id);
+            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListID == id);
             return _shoppingPlan.GetByID(expression);
         }
 
         [HttpGet("GetSearchByName")]
-        public List<Category> GetSearch([FromQuery] string Name)
+        public List<ShoppingList> GetSearch([FromQuery] string Name)
         {
-            Expression<Func<Category, bool>> expression = (c => c.CategoryName.Contains(Name));
+            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListName.Contains(Name));
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
 
         [HttpGet("GetOrderByName")]
-        public List<Category> GetOrder()
+        public List<ShoppingList> GetOrder()
         {
-            List<Category> categories = Get().OrderBy(c => c.CategoryName).ToList();
-            return categories;
+            List<ShoppingList> shoppingLists = Get().OrderBy(c => c.ShoppingListName).ToList();
+            return shoppingLists;
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Category category)
+        public ActionResult Post([FromBody] ShoppingList shoppingList)
         {
             //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(Category);
+            //validations.ValidateAndThrow(ShoppingList);
 
-            return StatusCode(_shoppingPlan.Add(category));
+            return StatusCode(_shoppingPlan.Add(shoppingList));
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] Category category)
+        public ActionResult Put([FromBody] ShoppingList shoppingList)
         {
-            if (category.CategoryID != 0)
+            if (shoppingList.ShoppingListID != 0)
             {
                 return BadRequest();
             }
@@ -65,19 +65,19 @@ namespace ShoppingPlanApi.Controllers
             //BookValidation validations = new BookValidation();
             //validations.ValidateAndThrow(book1);
 
-            int result = _shoppingPlan.Edit(category);
+            int result = _shoppingPlan.Edit(shoppingList);
             return StatusCode(result);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(Category category)
+        public ActionResult Delete(ShoppingList shoppingList)
         {
-            if (category.CategoryID != 0)
+            if (shoppingList.ShoppingListID != 0)
             {
                 return BadRequest();
             }
 
-            int result = _shoppingPlan.Delete(category);
+            int result = _shoppingPlan.Delete(shoppingList);
             return StatusCode(result);
         }
     }
