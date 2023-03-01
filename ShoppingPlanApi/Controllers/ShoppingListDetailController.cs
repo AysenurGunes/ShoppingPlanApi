@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
+using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
 using System.Linq.Expressions;
 
@@ -11,11 +13,11 @@ namespace ShoppingPlanApi.Controllers
     public class ShoppingListDetailController : ControllerBase
     {
         private readonly IShoppingPlan<ShoppingListDetail> _shoppingPlan;
-        // private readonly IMapper _mapper;
-        public ShoppingListDetailController(IShoppingPlan<ShoppingListDetail> shoppingPlan)
+        private readonly IMapper _mapper;
+        public ShoppingListDetailController(IShoppingPlan<ShoppingListDetail> shoppingPlan, IMapper mapper)
         {
             _shoppingPlan = shoppingPlan;
-            //_mapper = mapper;
+            _mapper = mapper;
         }
         [HttpGet("GetAll")]
         public List<ShoppingListDetail> Get()
@@ -45,26 +47,27 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] ShoppingListDetail shoppingListDetail)
+        public ActionResult Post([FromBody] ShoppingListDetailAddDto shoppingListDetailAddDto)
         {
             //PostBookValidation validations = new PostBookValidation();
             //validations.ValidateAndThrow(ShoppingListDetail);
+            var shoppingListDetail = _mapper.Map<ShoppingListDetail>(shoppingListDetailAddDto);
 
             return StatusCode(_shoppingPlan.Add(shoppingListDetail));
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] ShoppingListDetail shoppingListDetail)
+        public ActionResult Put(int id,[FromBody] ShoppingListDetailPutDto shoppingListDetailPutDto)
         {
-            if (shoppingListDetail.ShoppingListDetailID != 0)
+            if (id != 0)
             {
                 return BadRequest();
             }
 
             //BookValidation validations = new BookValidation();
             //validations.ValidateAndThrow(book1);
-
+            var shoppingListDetail = _mapper.Map<ShoppingListDetail>(shoppingListDetailPutDto);
             int result = _shoppingPlan.Edit(shoppingListDetail);
             return StatusCode(result);
         }

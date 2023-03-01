@@ -18,7 +18,7 @@ namespace ShoppingPlanApi.Controllers
         {
             _shoppingPlan = shoppingPlan;
             _mapper = mapper;
-            
+
         }
         [HttpGet("GetAll")]
         public List<ShoppingList> Get()
@@ -57,21 +57,27 @@ namespace ShoppingPlanApi.Controllers
             shoppingList.CreatedDate = DateTime.UtcNow;
             //take from token
             shoppingList.CreatedUserID = 1;
-            
+
             return StatusCode(_shoppingPlan.Add(shoppingList));
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] ShoppingList shoppingList)
+        public ActionResult Put(int id, [FromBody] ShoppingListPutDto shoppingListPutDto)
         {
-            if (shoppingList.ShoppingListID != 0)
+            if (id != 0)
             {
                 return BadRequest();
             }
 
             //BookValidation validations = new BookValidation();
             //validations.ValidateAndThrow(book1);
+            var shoppingList = _mapper.Map<ShoppingList>(shoppingListPutDto);
+
+            if (shoppingList.Done)
+            {
+                shoppingList.DoneDate = DateTime.UtcNow;
+            }
 
             int result = _shoppingPlan.Edit(shoppingList);
             return StatusCode(result);

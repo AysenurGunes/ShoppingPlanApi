@@ -9,6 +9,9 @@ namespace ShoppingPlanApi.AutoMapper
         public MappingProfile()
         {
             CreateMap<ShoppingListAddDto, ShoppingList>();
+            CreateMap<ShoppingListPutDto, ShoppingList>();
+            CreateMap<ShoppingListAddDto, ShoppingListDetail>();
+           CreateMap<ShoppingListPutDto, ShoppingListDetail>();
            
         }
     }

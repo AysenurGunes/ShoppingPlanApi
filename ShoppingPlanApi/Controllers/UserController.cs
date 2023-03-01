@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
+using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
 using System.Linq.Expressions;
 
@@ -11,11 +13,11 @@ namespace ShoppingPlanApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IShoppingPlan<User> _shoppingPlan;
-        // private readonly IMapper _mapper;
-        public UserController(IShoppingPlan<User> shoppingPlan)
+        private readonly IMapper _mapper;
+        public UserController(IShoppingPlan<User> shoppingPlan, IMapper mapper)
         {
             _shoppingPlan = shoppingPlan;
-            //_mapper = mapper;
+            _mapper = mapper;
         }
         [HttpGet("GetAll")]
         public List<User> Get()
@@ -45,26 +47,26 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] User user)
+        public ActionResult Post([FromBody] UserAddDto userAddDto)
         {
             //PostBookValidation validations = new PostBookValidation();
             //validations.ValidateAndThrow(User);
-
+            var user = _mapper.Map<User>(userAddDto);
             return StatusCode(_shoppingPlan.Add(user));
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] User user)
+        public ActionResult Put(int id,[FromBody] UserPutDto userPutDto)
         {
-            if (user.UserID != 0)
+            if (id != 0)
             {
                 return BadRequest();
             }
 
             //BookValidation validations = new BookValidation();
             //validations.ValidateAndThrow(book1);
-
+            var user=_mapper.Map<User>(userPutDto);
             int result = _shoppingPlan.Edit(user);
             return StatusCode(result);
         }
