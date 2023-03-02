@@ -14,8 +14,8 @@ namespace ShoppingPlanApi.Models
         public Measurement Measurement { get; set; }
         public bool Done { get; set; }
         public string Notes { get; set; }
-        public int UpdatedUserID { get; set; }
-        public User User { get; set; }
+        //public int? UpdatedUserID { get; set; }
+        //public User User { get; set; }
         public DateTime UpdatedDate { get; set; }
     }
 }

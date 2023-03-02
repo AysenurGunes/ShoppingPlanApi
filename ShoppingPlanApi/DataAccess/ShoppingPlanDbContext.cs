@@ -15,7 +15,8 @@ namespace ShoppingPlanApi.DataAccess
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("");
+            string con = @"Server=DESKTOP-TN9J4B3\SQLEXPRESS; Database=ShoppingPlanApi;User Id=patika; Password=123patika; TrustServerCertificate=True";
+            optionsBuilder.UseSqlServer(con);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

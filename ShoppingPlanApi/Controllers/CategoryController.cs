@@ -54,10 +54,10 @@ namespace ShoppingPlanApi.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
         public ActionResult Put([FromBody] Category category)
         {
-            if (category.CategoryID != 0)
+            if (category.CategoryID == 0)
             {
                 return BadRequest();
             }
@@ -69,10 +69,10 @@ namespace ShoppingPlanApi.Controllers
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public ActionResult Delete(Category category)
         {
-            if (category.CategoryID != 0)
+            if (category.CategoryID == 0)
             {
                 return BadRequest();
             }

@@ -81,7 +81,7 @@ namespace ShoppingPlanApi.Controllers
             var shoppingListDetail = _mapper.Map<ShoppingListDetail>(shoppingListDetailPutDto);
             shoppingListDetail.UpdatedDate = DateTime.UtcNow;
             //take from token
-            shoppingListDetail.UpdatedUserID = 1;
+          //  shoppingListDetail.UpdatedUserID = 1;
             int result = _shoppingPlan.Edit(shoppingListDetail);
             return StatusCode(result);
         }
