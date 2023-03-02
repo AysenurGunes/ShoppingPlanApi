@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Models;
@@ -18,6 +19,7 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
+        [Authorize]
         public List<Category> Get()
         {
             return _shoppingPlan.GetAll().ToList();

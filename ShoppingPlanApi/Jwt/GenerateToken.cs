@@ -3,26 +3,30 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ShoppingPlanApi.Helper
+namespace ShoppingPlanApi.Jwt
 {
     public class GenerateToken
     {
-        public string GenerateTokenJwt(int userID,int roleID)
+        private IConfiguration _configuration;
+        public GenerateToken(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        public string GenerateTokenJwt(int userID, int roleID)
         {
             try
             {
-                var mySecret = "ayse1258aayyssee";
+                var mySecret = _configuration["JwtConfig:Secret"];
                 var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
 
-                var myIssuer = "https://github.com/AysenurGunes";//temporary
-                var myAudience = "https://github.com/AysenurGunes";//temporary
-
+                var myIssuer = _configuration["JwtConfig:Issuer"];
+                var myAudience = _configuration["JwtConfig:Audience"];
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-            new Claim(ClaimTypes.NameIdentifier, userID.ToString()),
+            new Claim("User", userID.ToString()),
             new Claim("Role",roleID.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddHours(1),

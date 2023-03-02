@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
@@ -62,6 +63,7 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult Post([FromBody] ShoppingListWithDetailAddDto shoppingListWithDetailAddDto)
         {
             var shoppingList = _mapper.Map<ShoppingList>(shoppingListWithDetailAddDto.ShoppingListAddDto);

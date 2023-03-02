@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Dtos;
-using ShoppingPlanApi.Helper;
+using ShoppingPlanApi.Jwt;
 using ShoppingPlanApi.Models;
 using System.Linq.Expressions;
 
@@ -14,9 +13,11 @@ namespace ShoppingPlanApi.Controllers
     public class LoginProcessController
     {
         private readonly IShoppingPlan<User> _shoppingPlan;
-        public LoginProcessController(IShoppingPlan<User> shoppingPlan)
+        private readonly IConfiguration _configuration;
+        public LoginProcessController(IShoppingPlan<User> shoppingPlan, IConfiguration configuration)
         {
             _shoppingPlan = shoppingPlan;
+            _configuration = configuration;
         }
         [HttpPost("Login")]
         public string Login([FromQuery] LoginDto login)
@@ -29,7 +30,7 @@ namespace ShoppingPlanApi.Controllers
                 logins = GetByMailandPass(login.mailAdress, login.password);
                 if (logins.Count>0)
                 {
-                    GenerateToken generateToken = new GenerateToken();
+                    GenerateToken generateToken = new GenerateToken(_configuration);
                   token= generateToken.GenerateTokenJwt(logins.First().UserID, logins.First().RoleID);
                 }
             }
