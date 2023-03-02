@@ -8,6 +8,10 @@ namespace ShoppingPlanApi.DataAccess
         public ShoppingPlanDbContext()
         {
 
+        } 
+        public ShoppingPlanDbContext(DbContextOptions<ShoppingPlanDbContext> options):base(options)
+        {
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

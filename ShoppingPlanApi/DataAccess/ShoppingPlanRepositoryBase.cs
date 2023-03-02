@@ -5,12 +5,12 @@ namespace ShoppingPlanApi.DataAccess
 {
     public class ShoppingPlanRepositoryBase<TEntity, TContext> : IShoppingPlan<TEntity>
         where TEntity : class, new()
-        where TContext : ShoppingPlanDbContext, new()
+        where TContext : ShoppingPlanDbContext , new()
     {
         private readonly ShoppingPlanDbContext _dbContext;
         public ShoppingPlanRepositoryBase()
         {
-            _dbContext = new TContext();
+            _dbContext =new TContext();
         }
         public int Add(TEntity entity)
         {
