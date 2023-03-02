@@ -19,7 +19,7 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
-        [Authorize]
+        [Authorize(Roles=Dtos.Types.Role.Nuser)]
         public List<Category> Get()
         {
             return _shoppingPlan.GetAll().ToList();

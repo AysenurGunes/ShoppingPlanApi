@@ -1,4 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using ShoppingPlanApi.Dtos;
+using ShoppingPlanApi.Models;
+using ShoppingPlanApi.Response;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,7 +15,7 @@ namespace ShoppingPlanApi.Jwt
         {
             _configuration = configuration;
         }
-        public string GenerateTokenJwt(int userID, int roleID)
+        public async Task<string> GenerateTokenJwt(User user)
         {
             try
             {
@@ -26,8 +29,8 @@ namespace ShoppingPlanApi.Jwt
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-            new Claim("User", userID.ToString()),
-            new Claim("Role",roleID.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            new Claim(ClaimTypes.Role,user.Role.RoleName)
                     }),
                     Expires = DateTime.UtcNow.AddHours(1),
                     Issuer = myIssuer,
@@ -36,6 +39,15 @@ namespace ShoppingPlanApi.Jwt
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                //TokenResponse response = new TokenResponse
+                //{
+                //    AccessToken = token.ToString(),
+                //    ExpireTime = DateTime.UtcNow.AddHours(1),
+                //    Role = user.Role.RoleName,
+                //    UserID = user.UserID.ToString(),
+                //};
+                // return new BaseResponse<TokenResponse>(response);
                 return tokenHandler.WriteToken(token);
             }
             catch (Exception ex)

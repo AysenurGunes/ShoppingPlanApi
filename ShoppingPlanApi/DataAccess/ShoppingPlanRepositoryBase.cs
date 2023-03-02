@@ -91,6 +91,17 @@ namespace ShoppingPlanApi.DataAccess
                 return new List<TEntity>();
             }
         }
+        public IList<TEntity> GetSpecialWithInclude(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, bool>> expression2)
+        {
+            try
+            {
+                return _dbContext.Set<TEntity>().Where(expression).Include(expression2).ToList();
+            }
+            catch (Exception)
+            {
+                return new List<TEntity>();
+            }
+        }
 
     }
 }

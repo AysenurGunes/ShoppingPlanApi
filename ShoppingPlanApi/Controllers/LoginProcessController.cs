@@ -1,9 +1,11 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Jwt;
 using ShoppingPlanApi.Models;
+using ShoppingPlanApi.Response;
 using System.Linq.Expressions;
 
 namespace ShoppingPlanApi.Controllers
@@ -12,11 +14,13 @@ namespace ShoppingPlanApi.Controllers
     [ApiController]
     public class LoginProcessController
     {
-        private readonly IShoppingPlan<User> _shoppingPlan;
+       // private readonly IShoppingPlan<User> _shoppingPlan;
         private readonly IConfiguration _configuration;
-        public LoginProcessController(IShoppingPlan<User> shoppingPlan, IConfiguration configuration)
+        private readonly ShoppingPlanDbContext _context;
+        public LoginProcessController(ShoppingPlanDbContext context, IConfiguration configuration)
         {
-            _shoppingPlan = shoppingPlan;
+            // _shoppingPlan = shoppingPlan;
+            _context = context;
             _configuration = configuration;
         }
         [HttpPost("Login")]
@@ -26,12 +30,16 @@ namespace ShoppingPlanApi.Controllers
             string token = "";
             try
             {
-                List<User> logins=new List<User>();
-                logins = GetByMailandPass(login.mailAdress, login.password);
-                if (logins.Count>0)
+               // List<User> logins=new List<User>();
+
+              User  login1 = GetByMailandPass(login.mailAdress, login.password);
+                if (login1!=null)
                 {
                     GenerateToken generateToken = new GenerateToken(_configuration);
-                  token= generateToken.GenerateTokenJwt(logins.First().UserID, logins.First().RoleID);
+                    
+                  token= generateToken.GenerateTokenJwt(login1).Result;
+
+                    return token;
                 }
             }
             catch (Exception)
@@ -41,10 +49,11 @@ namespace ShoppingPlanApi.Controllers
             return token;
         }
         [HttpGet("GetByMailandPass")]
-        private List<User> GetByMailandPass([FromQuery] string mail, string pass)
+        private User GetByMailandPass([FromQuery] string mail, string pass)
         {
-            Expression<Func<User, bool>> expression = (c => c.Email == mail && c.Password == pass);
-            return _shoppingPlan.GetSpecial(expression).ToList();
+            //Expression<Func<User, bool>> expression = (c => c.Email == mail && c.Password == pass);
+
+            return _context.Users.Where(c => c.Email == mail && c.Password == pass).Include(c => c.Role).FirstOrDefault();
         }
     }
 }
