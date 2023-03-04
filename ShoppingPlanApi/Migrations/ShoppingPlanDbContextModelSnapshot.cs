@@ -38,7 +38,7 @@ namespace ShoppingPlanApi.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("CategoryID"));
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.Measurement", b =>
@@ -57,7 +57,7 @@ namespace ShoppingPlanApi.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("MeasurementID"));
 
-                    b.ToTable("Measurements");
+                    b.ToTable("Measurements", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.Product", b =>
@@ -76,7 +76,7 @@ namespace ShoppingPlanApi.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ProductID"));
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.Role", b =>
@@ -95,7 +95,7 @@ namespace ShoppingPlanApi.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("RoleID"));
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.ShoppingList", b =>
@@ -144,7 +144,7 @@ namespace ShoppingPlanApi.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("ShoppingLists");
+                    b.ToTable("ShoppingLists", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.ShoppingListDetail", b =>
@@ -189,7 +189,7 @@ namespace ShoppingPlanApi.Migrations
 
                     b.HasIndex("ShoppingListID");
 
-                    b.ToTable("ShoppingListDetails");
+                    b.ToTable("ShoppingListDetails", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.User", b =>
@@ -227,7 +227,7 @@ namespace ShoppingPlanApi.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingPlanApi.Models.ShoppingList", b =>

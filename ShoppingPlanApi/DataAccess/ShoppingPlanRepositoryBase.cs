@@ -21,7 +21,7 @@ namespace ShoppingPlanApi.DataAccess
                 _dbContext.SaveChanges();
                 return StatusCodes.Status200OK;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return StatusCodes.Status400BadRequest;

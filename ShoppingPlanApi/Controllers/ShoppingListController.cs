@@ -7,6 +7,7 @@ using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
 using ShoppingPlanApi.Validations;
+using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
 
 namespace ShoppingPlanApi.Controllers
@@ -64,28 +65,33 @@ namespace ShoppingPlanApi.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult Post([FromBody] ShoppingListWithDetailAddDto shoppingListWithDetailAddDto)
+        public ActionResult Post([FromBody] ShoppingListAddDto shoppingListAddDto)
         {
-            var shoppingList = _mapper.Map<ShoppingList>(shoppingListWithDetailAddDto.ShoppingListAddDto);
+            var shoppingList = _mapper.Map<ShoppingList>(shoppingListAddDto);
             shoppingList.Done = false;
             shoppingList.CreatedDate = DateTime.UtcNow;
             //take from token
             shoppingList.CreatedUserID = 1;
+            User user = new User();
+            user.UserID=1;
+            shoppingList.User = user; 
+            Category category= new Category();
+            category.CategoryID = shoppingList.CategoryID;
+            shoppingList.Category = category;
 
             ShoppingListValidation validations = new ShoppingListValidation();
             validations.ValidateAndThrow(shoppingList);
 
             int statusCode = _shoppingPlan.Add(shoppingList);
 
-           // ShoppingListDetailController shoppingListDetailController=new ShoppingListDetailController(_shoppingPlan,mapper)
             return StatusCode(statusCode);
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ShoppingListPutDto shoppingListPutDto)
+        public ActionResult Put([FromBody] ShoppingListPutDto shoppingListPutDto)
         {
-            if (id != 0)
+            if (shoppingListPutDto.ShoppingListID==0)
             {
                 return BadRequest();
             }
@@ -96,7 +102,27 @@ namespace ShoppingPlanApi.Controllers
             if (shoppingList.Done)
             {
                 shoppingList.DoneDate = DateTime.UtcNow;
+
+                EventBase<AdminShoppingList> eventBase = new EventBase<AdminShoppingList>();
+                AdminShoppingList adminShoppingList = new AdminShoppingList
+                {
+                    ShoppingListID = shoppingListPutDto.ShoppingListID,
+                    Notes1 = shoppingListPutDto.Notes,
+                    ShoppingListName = shoppingListPutDto.ShoppingListName,
+                    CategoryName="category1"
+                   
+                };
+                eventBase.EventProcesss?.Invoke(this, adminShoppingList);
             }
+
+            Category category = new Category();
+            category.CategoryID = shoppingList.CategoryID;
+            shoppingList.Category = category;
+
+            User user = new User();
+            user.UserID = 1;
+            shoppingList.CreatedUserID = user.UserID;
+            shoppingList.User = user;
 
             ShoppingListValidation validations = new ShoppingListValidation();
             validations.ValidateAndThrow(shoppingList);

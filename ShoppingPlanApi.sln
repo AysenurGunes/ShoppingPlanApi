@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingPlanApi", "ShoppingPlanApi\ShoppingPlanApi.csproj", "{C3B05DC1-58F9-40C9-BAFC-091C8F7B9099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingPlan.UnitTests", "ShoppingPlan.UnitTests\ShoppingPlan.UnitTests.csproj", "{663ED843-CADE-43BF-BA15-3D1AF8E6C53A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingPlan.UnitTests", "ShoppingPlan.UnitTests\ShoppingPlan.UnitTests.csproj", "{663ED843-CADE-43BF-BA15-3D1AF8E6C53A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingApiAdmin", "ShoppingApiAdmin\ShoppingApiAdmin.csproj", "{5C2DDC0B-85AC-4054-9AE7-0032AB1A1244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{663ED843-CADE-43BF-BA15-3D1AF8E6C53A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{663ED843-CADE-43BF-BA15-3D1AF8E6C53A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{663ED843-CADE-43BF-BA15-3D1AF8E6C53A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2DDC0B-85AC-4054-9AE7-0032AB1A1244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2DDC0B-85AC-4054-9AE7-0032AB1A1244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2DDC0B-85AC-4054-9AE7-0032AB1A1244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2DDC0B-85AC-4054-9AE7-0032AB1A1244}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

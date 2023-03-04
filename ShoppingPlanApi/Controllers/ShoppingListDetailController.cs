@@ -68,9 +68,9 @@ namespace ShoppingPlanApi.Controllers
 
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id,[FromBody] ShoppingListDetailPutDto shoppingListDetailPutDto)
+        public ActionResult Put([FromBody] ShoppingListDetailPutDto shoppingListDetailPutDto)
         {
-            if (id != 0)
+            if (shoppingListDetailPutDto.ShoppingListDetailID == 0)
             {
                 return BadRequest();
             }
