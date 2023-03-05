@@ -19,13 +19,15 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
-        [Authorize(Roles=Dtos.Types.Role.Nuser)]
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Category> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public Category Get([FromQuery] int id)
         {
             Expression<Func<Category, bool>> expression = (c => c.CategoryID == id);
@@ -33,6 +35,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Category> GetSearch([FromQuery] string Name)
         {
             Expression<Func<Category, bool>> expression = (c => c.CategoryName.Contains(Name));
@@ -40,6 +44,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Category> GetOrder()
         {
             List<Category> categories = Get().OrderBy(c => c.CategoryName).ToList();
@@ -47,16 +53,18 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] Category category)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(Category);
 
             return StatusCode(_shoppingPlan.Add(category));
         }
 
 
         [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Put([FromBody] Category category)
         {
             if (category.CategoryID == 0)
@@ -64,14 +72,14 @@ namespace ShoppingPlanApi.Controllers
                 return BadRequest();
             }
 
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
 
             int result = _shoppingPlan.Edit(category);
             return StatusCode(result);
         }
 
         [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(Category category)
         {
             if (category.CategoryID == 0)

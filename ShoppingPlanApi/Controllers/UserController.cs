@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
@@ -22,12 +23,16 @@ namespace ShoppingPlanApi.Controllers
             _mapper = mapper;
         }
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<User> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public User Get([FromQuery] int id)
         {
             Expression<Func<User, bool>> expression = (c => c.UserID == id);
@@ -36,6 +41,8 @@ namespace ShoppingPlanApi.Controllers
       
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<User> GetSearch([FromQuery] string Name)
         {
             Expression<Func<User, bool>> expression = (c => c.Name.Contains(Name));
@@ -43,6 +50,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<User> GetOrder()
         {
             List<User> users = Get().OrderBy(c => c.Name).ToList();
@@ -50,6 +59,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] UserAddDto userAddDto)
         {
             UserAddValidation validations = new UserAddValidation();
@@ -60,10 +71,12 @@ namespace ShoppingPlanApi.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public ActionResult Put(int id,[FromBody] UserPutDto userPutDto)
+        [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
+        public ActionResult Put([FromBody] UserPutDto userPutDto)
         {
-            if (id != 0)
+            if (userPutDto.UserID == 0)
             {
                 return BadRequest();
             }
@@ -75,10 +88,12 @@ namespace ShoppingPlanApi.Controllers
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(User user)
         {
-            if (user.UserID != 0)
+            if (user.UserID == 0)
             {
                 return BadRequest();
             }

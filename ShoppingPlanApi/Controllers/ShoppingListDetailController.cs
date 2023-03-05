@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
@@ -7,6 +8,7 @@ using ShoppingPlanApi.Dtos;
 using ShoppingPlanApi.Models;
 using ShoppingPlanApi.Validations;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace ShoppingPlanApi.Controllers
 {
@@ -22,12 +24,16 @@ namespace ShoppingPlanApi.Controllers
             _mapper = mapper;
         }
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingListDetail> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ShoppingListDetail Get([FromQuery] int id)
         {
             Expression<Func<ShoppingListDetail, bool>> expression = (c => c.ShoppingListDetailID == id);
@@ -35,12 +41,16 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByListName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingListDetail> GetSearchByListName([FromQuery] string Name)
         {
             Expression<Func<ShoppingListDetail, bool>> expression = (c => c.ShoppingList.ShoppingListName.Contains(Name));
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
         [HttpGet("GetSearchByCategory")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingListDetail> GetSearchByCategory([FromQuery] string categoryName)
         {
             Expression<Func<ShoppingListDetail, bool>> expression = (c => c.ShoppingList.Category.CategoryName.Contains(categoryName));
@@ -48,6 +58,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByListName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingListDetail> GetOrder()
         {
             List<ShoppingListDetail> shoppingListDetials = Get().OrderBy(c => c.ShoppingList.ShoppingListName).ToList();
@@ -55,6 +67,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] ShoppingListDetailAddDto shoppingListDetailAddDto)
         {
             ShoppingListDetailAddValidation validations = new ShoppingListDetailAddValidation();
@@ -67,7 +81,9 @@ namespace ShoppingPlanApi.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Put([FromBody] ShoppingListDetailPutDto shoppingListDetailPutDto)
         {
             if (shoppingListDetailPutDto.ShoppingListDetailID == 0)
@@ -80,16 +96,17 @@ namespace ShoppingPlanApi.Controllers
 
             var shoppingListDetail = _mapper.Map<ShoppingListDetail>(shoppingListDetailPutDto);
             shoppingListDetail.UpdatedDate = DateTime.UtcNow;
-            //take from token
-          //  shoppingListDetail.UpdatedUserID = 1;
+
             int result = _shoppingPlan.Edit(shoppingListDetail);
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(ShoppingListDetail shoppingListDetail)
         {
-            if (shoppingListDetail.ShoppingListDetailID != 0)
+            if (shoppingListDetail.ShoppingListDetailID == 0)
             {
                 return BadRequest();
             }

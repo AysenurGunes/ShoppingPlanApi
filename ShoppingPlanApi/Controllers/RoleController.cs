@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Models;
@@ -18,12 +19,16 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Role> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public Role Get([FromQuery] int id)
         {
             Expression<Func<Role, bool>> expression = (c => c.RoleID == id);
@@ -31,6 +36,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Role> GetSearch([FromQuery] string Name)
         {
             Expression<Func<Role, bool>> expression = (c => c.RoleName.Contains(Name));
@@ -38,6 +45,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Role> GetOrder()
         {
             List<Role> roles = Get().OrderBy(c => c.RoleName).ToList();
@@ -45,34 +54,35 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
         public ActionResult Post([FromBody] Role role)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(Role);
-
             return StatusCode(_shoppingPlan.Add(role));
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+
+        [Authorize(Roles =Dtos.Types.Role.Admin)]
         public ActionResult Put([FromBody] Role role)
         {
-            if (role.RoleID != 0)
+            if (role.RoleID == 0)
             {
                 return BadRequest();
             }
 
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
 
             int result = _shoppingPlan.Edit(role);
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
         public ActionResult Delete(Role role)
         {
-            if (role.RoleID != 0)
+            if (role.RoleID == 0)
             {
                 return BadRequest();
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Models;
@@ -18,12 +19,16 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Measurement> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public Measurement Get([FromQuery] int id)
         {
             Expression<Func<Measurement, bool>> expression = (c => c.MeasurementID == id);
@@ -31,6 +36,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Measurement> GetSearch([FromQuery] string Name)
         {
             Expression<Func<Measurement, bool>> expression = (c => c.MeasurementName.Contains(Name));
@@ -38,6 +45,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+        
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Measurement> GetOrder()
         {
             List<Measurement> measurements = Get().OrderBy(c => c.MeasurementName).ToList();
@@ -45,34 +54,36 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] Measurement measurement)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(Measurement);
+           
 
             return StatusCode(_shoppingPlan.Add(measurement));
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Put([FromBody] Measurement measurement)
         {
-            if (measurement.MeasurementID != 0)
+            if (measurement.MeasurementID == 0)
             {
                 return BadRequest();
             }
-
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
 
             int result = _shoppingPlan.Edit(measurement);
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(Measurement measurement)
         {
-            if (measurement.MeasurementID != 0)
+            if (measurement.MeasurementID == 0)
             {
                 return BadRequest();
             }

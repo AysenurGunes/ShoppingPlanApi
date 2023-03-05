@@ -9,6 +9,7 @@ using ShoppingPlanApi.Models;
 using ShoppingPlanApi.Validations;
 using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace ShoppingPlanApi.Controllers
 {
@@ -28,6 +29,8 @@ namespace ShoppingPlanApi.Controllers
 
 
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingList> Get()
         {
             return _shoppingPlan.GetAll().Where(c => c.Done != true).ToList();
@@ -63,25 +66,33 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ShoppingList Get([FromQuery] int id)
         {
-            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListID == id);
+            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListID == id && c.Done != true);
             return _shoppingPlan.GetByID(expression);
         }
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingList> GetSearchByName([FromQuery] string Name)
         {
-            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListName.Contains(Name));
+            Expression<Func<ShoppingList, bool>> expression = (c => c.ShoppingListName.Contains(Name) && c.Done != true);
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
         [HttpGet("GetSearchByCategory")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingList> GetSearchByCategory([FromQuery] string categoryName)
         {
-            Expression<Func<ShoppingList, bool>> expression = (c => c.Category.CategoryName.Contains(categoryName));
+            Expression<Func<ShoppingList, bool>> expression = (c => c.Category.CategoryName.Contains(categoryName) && c.Done != true);
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
         [HttpGet("GetSearchByDoneDate")]
+
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
         public List<ShoppingList> GetSearchByDoneDate([FromQuery] DateTime doneDate)
         {
             Expression<Func<ShoppingList, bool>> expression = (c => c.DoneDate.ToShortDateString() == doneDate.ToShortDateString());
@@ -89,6 +100,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<ShoppingList> GetOrder()
         {
             List<ShoppingList> shoppingLists = Get().OrderBy(c => c.ShoppingListName).ToList();
@@ -96,16 +109,16 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] ShoppingListAddDto shoppingListAddDto)
         {
             var shoppingList = _mapper.Map<ShoppingList>(shoppingListAddDto);
             shoppingList.Done = false;
             shoppingList.CreatedDate = DateTime.UtcNow;
-            //take from token
-            shoppingList.CreatedUserID = 1;
+            var userid = (User.Identity as ClaimsIdentity).FindFirst("UserID").Value;
+            shoppingList.CreatedUserID = Convert.ToInt32(userid);
             User user = new User();
-            user.UserID = 1;
+            user.UserID = shoppingList.CreatedUserID;
             shoppingList.User = user;
             Category category = new Category();
             category.CategoryID = shoppingList.CategoryID;
@@ -120,7 +133,9 @@ namespace ShoppingPlanApi.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Put([FromBody] ShoppingListPutDto shoppingListPutDto)
         {
             if (shoppingListPutDto.ShoppingListID == 0)
@@ -151,8 +166,9 @@ namespace ShoppingPlanApi.Controllers
             category.CategoryID = shoppingList.CategoryID;
             shoppingList.Category = category;
 
+            var userid = (User.Identity as ClaimsIdentity).FindFirst("UserID").Value;
             User user = new User();
-            user.UserID = 1;
+            user.UserID = Convert.ToInt32(userid);
             shoppingList.CreatedUserID = user.UserID;
             shoppingList.User = user;
 
@@ -163,10 +179,12 @@ namespace ShoppingPlanApi.Controllers
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(ShoppingList shoppingList)
         {
-            if (shoppingList.ShoppingListID != 0)
+            if (shoppingList.ShoppingListID == 0)
             {
                 return BadRequest();
             }

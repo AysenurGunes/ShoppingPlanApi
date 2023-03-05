@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingPlanApi.DataAccess;
 using ShoppingPlanApi.Models;
@@ -18,12 +19,16 @@ namespace ShoppingPlanApi.Controllers
             //_mapper = mapper;
         }
         [HttpGet("GetAll")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Product> Get()
         {
             return _shoppingPlan.GetAll().ToList();
         }
 
         [HttpGet("GetByID")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public Product Get([FromQuery] int id)
         {
             Expression<Func<Product, bool>> expression = (c => c.ProductID == id);
@@ -31,6 +36,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetSearchByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Product> GetSearch([FromQuery] string Name)
         {
             Expression<Func<Product, bool>> expression = (c => c.ProductName.Contains(Name));
@@ -38,6 +45,8 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpGet("GetOrderByName")]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public List<Product> GetOrder()
         {
             List<Product> products = Get().OrderBy(c => c.ProductName).ToList();
@@ -45,34 +54,37 @@ namespace ShoppingPlanApi.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Post([FromBody] Product product)
         {
-            //PostBookValidation validations = new PostBookValidation();
-            //validations.ValidateAndThrow(Product);
+            
 
             return StatusCode(_shoppingPlan.Add(product));
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Put([FromBody] Product product)
         {
-            if (product.ProductID != 0)
+            if (product.ProductID == 0)
             {
                 return BadRequest();
             }
 
-            //BookValidation validations = new BookValidation();
-            //validations.ValidateAndThrow(book1);
 
             int result = _shoppingPlan.Edit(product);
             return StatusCode(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+
+        [Authorize(Roles = $"{Dtos.Types.Role.Admin},{Dtos.Types.Role.Nuser}")]
         public ActionResult Delete(Product product)
         {
-            if (product.ProductID != 0)
+            if (product.ProductID == 0)
             {
                 return BadRequest();
             }

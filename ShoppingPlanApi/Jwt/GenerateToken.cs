@@ -30,7 +30,8 @@ namespace ShoppingPlanApi.Jwt
                     Subject = new ClaimsIdentity(new Claim[]
                     {
             new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            new Claim(ClaimTypes.Role,user.Role.RoleName)
+            new Claim(ClaimTypes.Role,user.Role.RoleName),
+            new Claim("UserID",user.UserID.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddHours(1),
                     Issuer = myIssuer,
