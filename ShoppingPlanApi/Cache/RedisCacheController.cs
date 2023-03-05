@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -22,6 +23,7 @@ namespace ShoppingPlanApi.Cache
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
         public async Task<IEnumerable<ShoppingList>> GetRedis([FromQuery] int id)
         {
             string cacheKey = id.ToString();
@@ -42,19 +44,19 @@ namespace ShoppingPlanApi.Cache
                 json = JsonConvert.SerializeObject(tempList);
                 citiesFromCache = Encoding.UTF8.GetBytes(json);
                 var options = new DistributedCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromDays(1)) // belirli bir süre erişilmemiş ise expire eder
-                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1)); // belirli bir süre sonra expire eder.
+                        .SetSlidingExpiration(TimeSpan.FromDays(1))
+                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1)); 
                 await distributedCache.SetAsync(cacheKey, citiesFromCache, options);
                 return tempList;
             }
         }
 
 
-        [HttpPost]
-        [Route("DeleteRedisCashe")]
-        public ActionResult DeleteCache(int id)
+        [HttpDelete("{id}")]
+
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
+        public ActionResult Delete([FromQuery ]int id)
         {
-            // remove cashe
             distributedCache.Remove(id.ToString());
             return Ok();
         }
