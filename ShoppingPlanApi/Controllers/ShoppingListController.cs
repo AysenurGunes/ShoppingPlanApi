@@ -16,6 +16,7 @@ namespace ShoppingPlanApi.Controllers
     [ApiController]
     public class ShoppingListController : ControllerBase
     {
+
         private readonly IShoppingPlan<ShoppingList> _shoppingPlan;
         private readonly IMapper _mapper;
         public ShoppingListController(IShoppingPlan<ShoppingList> shoppingPlan, IMapper mapper)
@@ -24,10 +25,41 @@ namespace ShoppingPlanApi.Controllers
             _mapper = mapper;
 
         }
+
+
         [HttpGet("GetAll")]
         public List<ShoppingList> Get()
         {
-            return _shoppingPlan.GetAll().ToList();
+            return _shoppingPlan.GetAll().Where(c => c.Done != true).ToList();
+        }
+        [HttpGet("GetAdmin")]
+        [Authorize(Roles = Dtos.Types.Role.Admin)]
+        public List<AdminShoppingList> GetAdmin()
+        {
+            EventBase<AdminShoppingList> eventBase = new EventBase<AdminShoppingList>();
+            eventBase.EventProcesssGet += EventGet;
+
+            return eventBase.EventGetProcess();
+        }
+        private static List<AdminShoppingList> EventGet()
+        {
+            //actually must use rabbitmq
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7040/api/adminshoppinglist/");
+
+
+                var getTask = client.GetFromJsonAsync<List<AdminShoppingList>>("getall").Result;
+
+
+                //var result = getTask.Result;
+                //var readTask = result.Content.ReadAsAsync<IList<AdminShoppingList>>();
+                //readTask.Wait();
+
+                //List<AdminShoppingList> lists = readTask.Result;
+                return getTask;
+
+            }
         }
 
         [HttpGet("GetByID")]
@@ -52,7 +84,7 @@ namespace ShoppingPlanApi.Controllers
         [HttpGet("GetSearchByDoneDate")]
         public List<ShoppingList> GetSearchByDoneDate([FromQuery] DateTime doneDate)
         {
-            Expression<Func<ShoppingList, bool>> expression = (c => c.DoneDate.ToShortDateString()==doneDate.ToShortDateString());
+            Expression<Func<ShoppingList, bool>> expression = (c => c.DoneDate.ToShortDateString() == doneDate.ToShortDateString());
             return _shoppingPlan.GetSpecial(expression).ToList();
         }
 
@@ -73,9 +105,9 @@ namespace ShoppingPlanApi.Controllers
             //take from token
             shoppingList.CreatedUserID = 1;
             User user = new User();
-            user.UserID=1;
-            shoppingList.User = user; 
-            Category category= new Category();
+            user.UserID = 1;
+            shoppingList.User = user;
+            Category category = new Category();
             category.CategoryID = shoppingList.CategoryID;
             shoppingList.Category = category;
 
@@ -91,11 +123,11 @@ namespace ShoppingPlanApi.Controllers
         [HttpPut("{id}")]
         public ActionResult Put([FromBody] ShoppingListPutDto shoppingListPutDto)
         {
-            if (shoppingListPutDto.ShoppingListID==0)
+            if (shoppingListPutDto.ShoppingListID == 0)
             {
                 return BadRequest();
             }
-          
+
 
             var shoppingList = _mapper.Map<ShoppingList>(shoppingListPutDto);
 
@@ -109,8 +141,8 @@ namespace ShoppingPlanApi.Controllers
                     ShoppingListID = shoppingListPutDto.ShoppingListID,
                     Notes1 = shoppingListPutDto.Notes,
                     ShoppingListName = shoppingListPutDto.ShoppingListName,
-                    CategoryName="category1"
-                   
+                    CategoryName = "category1"
+
                 };
                 eventBase.EventProcesss?.Invoke(this, adminShoppingList);
             }
