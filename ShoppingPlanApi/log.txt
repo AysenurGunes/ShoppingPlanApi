@@ -1,0 +1,2 @@
+GET /api/RedisCache/6=>200
+GET /api/RedisCache/6=>200

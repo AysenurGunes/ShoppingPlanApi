@@ -8,11 +8,15 @@ using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+ConfigurationManager configuration = builder.Configuration;
 //public static JwtConfig JwtConfig { get; private set; }
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ShoppingPlanDbContext>();
+builder.Services.AddStackExchangeRedisCache(options => { options.Configuration = configuration["RedisCacheUrl"]; });
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

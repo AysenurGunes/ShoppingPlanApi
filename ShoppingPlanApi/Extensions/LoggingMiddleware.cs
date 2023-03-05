@@ -8,11 +8,11 @@ namespace ShoppingPlanApi.Extensions
     public class LoggingMiddleware
     {
         readonly RequestDelegate _requestDelegate;
-        readonly ILogger _logger;
-        public LoggingMiddleware(RequestDelegate requestDelegate, ILogger logger)
+      
+        public LoggingMiddleware(RequestDelegate requestDelegate)
         {
             _requestDelegate = requestDelegate;
-            _logger = logger;
+           
         }
         public async Task InvokeAsync(HttpContext httpContext)
         {
